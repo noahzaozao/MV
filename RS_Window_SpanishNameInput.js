@@ -1,17 +1,120 @@
 /*:
- * @plugindesc <RS_Window_SpanishNameInput>
+ * @plugindesc This plugin allows you to type the Spanish name in the Name Input <RS_Window_SpanishNameInput>
  * @author biud436
+ * 
+ * @param Font Size
+ * @desc Specify the font size in name processing.
+ * @default 28
+ * 
+ * @param Line Height
+ * @desc Specify the line height for window.
+ * @default 36
+ * 
+ * @param Window Width
+ * @desc Calculate the window width.
+ * @default 480
+ * 
+ * @param Window Height
+ * @desc Calculate the window height.
+ * @default this.fittingHeight(6);
+ * 
+ * @param Default Button Width
+ * @desc Specify the default button width.
+ * @default Math.floor(this.width/this.maxCols());
+ * 
+ * @param Center Spacing
+ * @desc Specify the spacing value in the middle space.
+ * @default 0
+ * 
+ * @param Button Type
+ * @type boolean
+ * @desc Sets the button width how to calculate the width.
+ * @default false
+ * @on Crop
+ * @off Expand
+ * 
  * @help
+ * =============================================================================
+ * Q & A
+ * =============================================================================
+ * Q. How to prevent to being expanded button width automatically when the text length is too long?
+ * A. In the plugin parameter named Button Type, if you set the Crop option, it can decrease the font size of the button if the text width is larger than the default button width.
  * =============================================================================
  * Change Log
  * =============================================================================
  * 2018.02.24 (v1.0.0) - First Release.
+ * 2018.10.13 (v1.0.1) - Added several plugin parameters.
+ */
+/*:ko
+ * @plugindesc 이 플러그인은 이름 입력에서 스페인어를 입력할 수 있게 해줍니다. <RS_Window_SpanishNameInput>
+ * @author 러닝은빛(biud436)
+ * 
+ * @param Font Size
+ * @desc Specify the font size in name processing.
+ * @default 28
+ * 
+ * @param Line Height
+ * @desc Specify the line height for window.
+ * @default 36
+ * 
+ * @param Window Width
+ * @desc Calculate the window width.
+ * @default 480
+ * 
+ * @param Window Height
+ * @desc Calculate the window height.
+ * @default this.fittingHeight(6);
+ * 
+ * @param Default Button Width
+ * @desc Specify the default button width.
+ * @default Math.floor(this.width/this.maxCols());
+ * 
+ * @param Center Spacing
+ * @desc Specify the spacing value in the middle space.
+ * @default 0
+ * 
+ * @param Button Type
+ * @type boolean
+ * @desc Sets the button width how to calculate the width.
+ * @default false
+ * @on Crop
+ * @off Expand
+ * 
+ * @help
+ * =============================================================================
+ * Q & A
+ * =============================================================================
+ * Q. How to prevent to being expanded button width automatically when the text length is too long?
+ * A. In the plugin parameter named Button Type, if you set the Crop option, it can decrease the font size of the button if the text width is larger than the default button width.
+ * =============================================================================
+ * Change Log
+ * =============================================================================
+ * 2018.02.24 (v1.0.0) - First Release.
+ * 2018.10.13 (v1.0.1) - Added several plugin parameters.
  */
 
  var Imported = Imported || {};
  Imported.RS_Window_SpanishNameInput = true;
 
+ var RS = RS || {};
+ RS.Window_SpanishNameInput = RS.Window_SpanishNameInput || {};
+ RS.Window_SpanishNameInput.Params = RS.Window_SpanishNameInput.Params || {};
+
 (function () {
+
+  var parameters = $plugins.filter(function (i) {
+    return i.description.contains('<RS_Window_SpanishNameInput>');
+  });
+
+  parameters = (parameters.length > 0) && parameters[0].parameters;  
+
+  RS.Window_SpanishNameInput.Params.fontSize = parseInt(parameters["Font Size"] || 28);
+  RS.Window_SpanishNameInput.Params.windowWidthEval = parameters["Window Width"] || "480";
+  RS.Window_SpanishNameInput.Params.windowHeightEval = parameters["Window Height"] || "this.fittingHeight(6);";
+  RS.Window_SpanishNameInput.Params.lineHeight = parseInt(parameters["Line Height"] || 36);
+  RS.Window_SpanishNameInput.Params.buttonWidth = parameters["Default Button Width"] || "42";
+  RS.Window_SpanishNameInput.Params.isCropped = Boolean(parameters["Button Type"] === "true");
+  RS.Window_SpanishNameInput.Params.centerSpacing = parseInt(parameters["Center Spacing"] || 0);
 
   function Window_SpanishNameInput() {
     this.initialize.apply(this, arguments);
@@ -39,7 +142,15 @@
   };
 
   Window_SpanishNameInput.prototype.windowHeight = function() {
-      return this.fittingHeight(6);
+      return eval(RS.Window_SpanishNameInput.Params.windowHeightEval);
+  };
+
+  Window_SpanishNameInput.prototype.standardFontSize = function() {
+    return RS.Window_SpanishNameInput.Params.fontSize;
+  };
+
+  Window_SpanishNameInput.prototype.lineHeight = function() {
+    return RS.Window_SpanishNameInput.Params.lineHeight;
   };
 
   Window_SpanishNameInput.prototype.table = function() {
@@ -215,26 +326,30 @@
   };
 
   Window_SpanishNameInput.prototype.itemRect = function(index) {
-    var w = 42;
-    var c = 24;
-    if(index === this._dataFromTable.spaceIndex ||
-      index === this._dataFromTable.backIndex ||
-      index === this._dataFromTable.okIndex
-    ) {
-      w = this.contentsWidth() / 6;
-      return {
-          x: this.contentsWidth() / 2 + (index % 3) * w,
-          y: Math.floor(index / 10) * this.lineHeight(),
-          width: w,
-          height: this.lineHeight()
-      };
+    var w = eval(RS.Window_SpanishNameInput.Params.buttonWidth);
+    var c = RS.Window_SpanishNameInput.Params.centerSpacing;
+    var lineHeight = this.lineHeight();
+
+    if(!RS.Window_SpanishNameInput.Params.isCropped) {
+      if(index === this._dataFromTable.spaceIndex ||
+        index === this._dataFromTable.backIndex ||
+        index === this._dataFromTable.okIndex
+      ) {
+        w = this.contentsWidth() / 6;
+        return {
+            x: this.contentsWidth() / 2 + (index % 3) * w,
+            y: Math.floor(index / 10) * lineHeight,
+            width: w,
+            height: lineHeight
+        };
+      }
     }
 
     return {
         x: index % 10 * w + Math.floor(index % 10 / 5) * c,
-        y: Math.floor(index / 10) * this.lineHeight(),
+        y: Math.floor(index / 10) * lineHeight,
         width: w,
-        height: this.lineHeight()
+        height: lineHeight
     };
 
   };
@@ -278,6 +393,10 @@
   //============================================================================
   // Window_NameEdit
   //============================================================================
+
+  Window_NameEdit.prototype.windowWidth = function() {
+      return eval(RS.Window_SpanishNameInput.Params.windowWidthEval);
+  };  
 
   Window_NameEdit.prototype.faceWidth = function() {
       return 0;

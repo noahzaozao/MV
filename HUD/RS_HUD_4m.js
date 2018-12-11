@@ -1,6 +1,6 @@
 /*:
  * RS_HUD_4m.js
- * @plugindesc (v1.2.7c) This plugin draws the HUD, which displays the hp and mp and exp and level of each party members.
+ * @plugindesc (v1.2.8b) This plugin draws the HUD, which displays the hp and mp and exp and level of each party members.
  *
  * @author biud436
  *
@@ -555,10 +555,658 @@
  * 2017.10.26 (v1.2.7) - This plugin has applied with the new plugin manager features in the plugin parameters.
  * 2017.10.27 (v1.2.7b) - Fixed the issue that has the endless loading when using the custom font.
  * 2018.03.15 (v1.2.7c) - Removed some event listeners.
+ * 2018.05.09 (v1.2.8) - Supported a face image that is made using SumRndmDde's CharacterCreatorEX plugin.
+ * 2018.05.09 (v1.2.8b) - Fixed an issue that is not showing the image after it has been added.
  */
-
+/*:ko
+ * RS_HUD_4m.js
+ * @plugindesc (v1.2.8b) 화면에 HUD를 표시합니다.
+ *
+ * @author 러닝은빛(biud436)
+ *
+ * @param --- Image Name
+ * @text 이미지 목록
+ *
+ * @param EXP Gauge
+ * @text 경험치 게이지바
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default exr
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param Empty Gauge
+ * @text 빈 게이지바
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default gauge
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param HP Gauge
+ * @text HP 게이지바
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default hp
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param MP Gauge
+ * @text MP 게이지바
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default mp
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param HUD Background
+ * @text HUD 배경
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default hud_window_empty
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param Masking
+ * @text 마스크 이미지
+ * @parent --- Image Name
+ * @desc 사용 할 이미지 파일을 지정하세요
+ * @default masking
+ * @require 1
+ * @dir img/pictures/
+ * @type file
+ *
+ * @param --- Image Custom Position
+ * @text 이미지 좌표 설정
+ *
+ * @param Face Position
+ * @text 얼굴 이미지 좌표
+ * @parent --- Image Custom Position
+ * @desc 이미지의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 0, 0, true
+ *
+ * @param HP Position
+ * @text HP 게이지바 좌표
+ * @parent --- Image Custom Position
+ * @desc 이미지의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 160, 43, true
+ *
+ * @param MP Position
+ * @text MP 게이지바 좌표
+ * @parent --- Image Custom Position
+ * @desc 이미지의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 160, 69, true
+ *
+ * @param EXP Position
+ * @text 경험치 게이지바 좌표
+ * @parent --- Image Custom Position
+ * @desc 이미지의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 83, 91, true
+ *
+ * @param HP Text Position
+ * @text HP 텍스트 좌표
+ * @parent --- Image Custom Position
+ * @desc 텍스트 스프라이트의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 160, 53, true
+ *
+ * @param MP Text Position
+ * @text MP 텍스트 좌표
+ * @parent --- Image Custom Position
+ * @desc 텍스트 스프라이트의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 160, 79, true
+ *
+ * @param Level Text Position
+ * @text 레벨 텍스트 좌표
+ * @parent --- Image Custom Position
+ * @desc 텍스트 스프라이트의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 60, 80, true
+ *
+ * @param EXP Text Position
+ * @text 경험치 텍스트 좌표
+ * @parent --- Image Custom Position
+ * @desc 텍스트 스프라이트의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 120.5, 93, true
+ *
+ * @param Name Text Position
+ * @text 이름 텍스트 좌표
+ * @parent --- Image Custom Position
+ * @desc 텍스트 스프라이트의 x, y, visible 속성을 설정합니다.
+ * (배경 이미지를 기준으로 한 상대 좌표로 그려집니다)
+ * @default 54, 53, false
+ *
+ * @param --- Noraml
+ * @text 설정
+ *
+ * @param Width
+ * @text 폭
+ * @parent --- Noraml
+ * @desc 기본 이미지를 그대로 사용하신다면 값을 절대 바꾸지 마세요
+ * (default : 317)
+ * @default 317
+ *
+ * @param Height
+ * @text 높이
+ * @parent --- Noraml
+ * @desc 기본 이미지를 그대로 사용하신다면 값을 절대 바꾸지 마세요
+ * (default : 101)
+ * @default 101
+ *
+ * @param Margin
+ * @text 경계선 굵기
+ * @parent --- Noraml
+ * @type number
+ * @min 0
+ * @desc HUD 경계선과의 간격 값입니다. 
+ * @default 0
+ *
+ * @param Gaussian Blur
+ * @text 가우시안 블러
+ * @parent --- Noraml
+ * @type boolean
+ * @desc 얼굴 이미지 테두리에 블러를 설정합니다.
+ * @default true
+ *
+ * @param Show
+ * @text 표시 여부
+ * @parent --- Noraml
+ * @type boolean
+ * @desc HUD 표시 여부를 설정합니다.
+ * @default true
+ *
+ * @param Opacity
+ * @text 투명도 설정
+ * @parent --- Noraml
+ * @type number
+ * @min 0
+ * @max 255
+ * @desc HUD의 투명도 값을 설정합니다.
+ * @default 255
+ *
+ * @param Arrangement
+ * @text 기준 위치
+ * @parent --- Noraml
+ * @type string[]
+ * @desc 각 HUD에 고정 위치 값을 부여합니다. (영어로 기입하세요)
+ * @default ["LeftTop", "LeftBottom", "RightTop", "RightBottom"]
+ *
+ * @param Anchor
+ * @text 기준 위치(기본값)
+ * @parent --- Noraml
+ * @desc 기준 위치(앵커) 값을 찾을 수 없을 때, 설정되는 값입니다.
+ * @default LeftTop
+ *
+ * @param preloadImportantFaces
+ * @text 얼굴 이미지 미리 불러오기
+ * @parent --- Noraml
+ * @type string[]
+ * @desc 얼굴 이미지를 사전에 미리 로드하여 얼굴 이미지를 바로 표시합니다.
+ * (이 값을 설정하지 않으면 오류가 날 수 있습니다.)
+ * @default ["Actor1", "Actor2", "Actor3"]
+ *
+ * @param Battle Only
+ * @text 전투에서만 사용 가능
+ * @parent --- Noraml
+ * @type boolean
+ * @desc 전투에서만 HUD를 사용하려면 이 값을 true로 설정하십시오.
+ * (default : false)
+ * @default false
+ *
+ * @param Show Comma
+ * @text 콤마 문자 표시
+ * @parent --- Noraml
+ * @type boolean
+ * @desc 텍스트를 표시할 때 세 글자마다 콤마를 넣어 가독성읖 높입니다.
+ * @default false
+ *
+ * @param Max Exp Text
+ * @text 최대 경험치 텍스트
+ * @parent --- Noraml
+ * @desc
+ * @default ------/------
+ *
+ * @param Max Members
+ * @text 최대 멤버 수
+ * @parent --- Noraml
+ * @type number
+ * @min 1
+ * @desc 화면에 표시 할 최대 파티 멤버 수를 지정합니다.
+ * @default 4
+ *
+ * @param --- Font
+ * @text 폰트 설정
+ *
+ * @param Chinese Font
+ * @text 중국어 폰트
+ * @parent --- Font
+ * @desc 중국어 폰트를 지정할 수 있습니다. 단 폰트가 해당 OS의 폰트 폴더에 설치되어있어야 동작합니다.
+ * @default SimHei, Heiti TC, sans-serif
+ *
+ * @param Korean Font
+ * @text 한국어 폰트
+ * @parent --- Font
+ * @desc 원하는 한국어 폰트를 설정하세요. 단 폰트가 해당 OS의 폰트 폴더에 설치되어있어야 동작합니다.
+ * @default NanumGothic, Dotum, AppleGothic, sans-serif
+ *
+ * @param Standard Font
+ * @text 기본 폰트
+ * @parent --- Font
+ * @desc fonts 폴더에서 폰트 파일이 설정된 스타일 시트 파일(*.css)을 불러옵니다.
+ * @default GameFont
+ *
+ * @param Level Text Size
+ * @text 레벨 텍스트
+ * @parent --- Font
+ * @desc 텍스트의 크기를 지정합니다.
+ * @default 24
+ *
+ * @param HP Text Size
+ * @text HP 텍스트
+ * @parent --- Font
+ * @desc 텍스트의 크기를 지정합니다.
+ * @default 12
+ *
+ * @param MP Text Size
+ * @text MP 텍스트
+ * @parent --- Font
+ * @desc 텍스트의 크기를 지정합니다.
+ * @default 12
+ *
+ * @param EXP Text Size
+ * @text EXP 텍스트
+ * @parent --- Font
+ * @desc 텍스트의 크기를 지정합니다.
+ * @default 12
+ *
+ * @param Name Text Size
+ * @text 이름 텍스트
+ * @parent --- Font
+ * @desc 텍스트의 크기를 지정합니다.
+ * @default 12
+ *
+ * @param --- Text Color
+ * @text 텍스트 색상
+ *
+ * @param HP Color
+ * @text HP 텍스트
+ * @parent --- Text Color
+ * @desc 텍스트의 색상을 지정합니다.
+ * @default #ffffff
+ *
+ * @param MP Color
+ * @text MP 텍스트
+ * @parent --- Text Color
+ * @desc 텍스트의 색상을 지정합니다.
+ * @default #ffffff
+ *
+ * @param EXP Color
+ * @text EXP 텍스트
+ * @parent --- Text Color
+ * @desc 텍스트의 색상을 지정합니다.
+ * @default #ffffff
+ *
+ * @param Level Color
+ * @text 레벨 텍스트
+ * @parent --- Text Color
+ * @desc 텍스트의 색상을 지정합니다.
+ * @default #ffffff
+ *
+ * @param Name Color
+ * @text 이름 텍스트
+ * @parent --- Text Color
+ * @desc 텍스트의 색상을 지정합니다.
+ * @default #ffffff
+ *
+ * @param --- Text Outline Color
+ * @text 텍스트 테두리 색상
+ *
+ * @param HP Outline Color
+ * @text HP 텍스트
+ * @parent --- Text Outline Color
+ * @desc 텍스트의 테두리 색상을 지정합니다.
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param MP Outline Color
+ * @text MP 텍스트
+ * @parent --- Text Outline Color
+ * @desc 텍스트의 테두리 색상을 지정합니다.
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param EXP Outline Color
+ * @text EXP 텍스트
+ * @parent --- Text Outline Color
+ * @desc 텍스트의 테두리 색상을 지정합니다.
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param Level Outline Color
+ * @text 레벨 텍스트
+ * @parent --- Text Outline Color
+ * @desc 텍스트의 테두리 색상을 지정합니다.
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param Name Outline Color
+ * @text 이름 텍스트
+ * @parent --- Text Outline Color
+ * @desc 텍스트의 테두리 색상을 지정합니다.
+ * @default rgba(0, 0, 0, 0.5)
+ *
+ * @param --- Text Outline Width
+ * @text 텍스트 테두리 굵기
+ *
+ * @param HP Outline Width
+ * @text HP 텍스트
+ * @parent --- Text Outline Width
+ * @desc 텍스트의 테두리 굵기를 지정합니다.
+ * @default 4
+ *
+ * @param MP Outline Width
+ * @text MP 텍스트
+ * @parent --- Text Outline Width
+ * @desc 텍스트의 테두리 굵기를 지정합니다.
+ * @default 4
+ *
+ * @param EXP Outline Width
+ * @text EXP 텍스트
+ * @parent --- Text Outline Width
+ * @desc 텍스트의 테두리 굵기를 지정합니다.
+ * @default 4
+ *
+ * @param Level Outline Width
+ * @text 레벨 텍스트
+ * @parent --- Text Outline Width
+ * @desc 텍스트의 테두리 굵기를 지정합니다.
+ * @default 4
+ *
+ * @param Name Outline Width
+ * @text 이름 텍스트
+ * @parent --- Text Outline Width
+ * @desc 텍스트의 테두리 굵기를 지정합니다.
+ * @default 4
+ *
+ * @param --- Custom Font
+ * @text 사용자 정의 폰트
+ *
+ * @param Using Custom Font
+ * @text 사용 여부
+ * @parent --- Custom Font
+ * @type boolean
+ * @desc 사용자 정의 폰트 사용 여부를 설정할 수 있습니다. 
+ * @default false
+ *
+ * @param Custom Font Name
+ * @text 폰트 이름
+ * @parent --- Custom Font
+ * @desc 사용자 정의 폰트의 이름을 지정합니다.
+ * @default NanumBrush
+ *
+ * @param Custom Font Src
+ * @text 폰트 경로
+ * @parent --- Custom Font
+ * @desc 사용자 정의 폰트의 파일 경로를 지정합니다.
+ * @default fonts/NanumBrush.ttf
+ *
+ * @param --- Custom HUD Anchor
+ * @text 사용자 정의 위치
+ *
+ * @param Custom Pos 1
+ * @text 커스텀 위치 1
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default 0, (H * 0) + PD
+ *
+ * @param Custom Pos 2
+ * @text 커스텀 위치 2
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default 0, (H * 1) + PD
+ *
+ * @param Custom Pos 3
+ * @text 커스텀 위치 3
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default 0, (H * 2) + PD
+ *
+ * @param Custom Pos 4
+ * @text 커스텀 위치 4
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default 0, (H * 3) + PD
+ *
+ * @param Custom Pos 5
+ * @text 커스텀 위치 5
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default 0, (H * 4) + PD
+ *
+ * @param Custom Pos 6
+ * @text 커스텀 위치 6
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default W + PD, (H * 0) + PD
+ *
+ * @param Custom Pos 7
+ * @text 커스텀 위치 7
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default W + PD, (H * 1) + PD
+ *
+ * @param Custom Pos 8
+ * @text 커스텀 위치 8
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default W + PD, (H * 2) + PD
+ *
+ * @param Custom Pos 9
+ * @text 커스텀 위치 9
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default W + PD, (H * 3) + PD
+ *
+ * @param Custom Pos 10
+ * @text 커스텀 위치 10
+ * @parent --- Custom HUD Anchor
+ * @desc 미리 정의된 변수 : W, H, PD, BW, BH
+ * (설정 방법은 도움말 섹션을 참고하세요)
+ * @default W + PD, (H * 4) + PD
+ *
+ * @help
+ * =============================================================================
+ * 설치 방법
+ * =============================================================================
+ *
+ * 리소스를 아래 링크에서 받아서 img/pictures 폴더에 다운로드 받은 리소스를 넣으세요.
+ * 
+ * 리소스 링크 : https://www.dropbox.com/s/umjlbgfgdts2rf7/pictures.zip?dl=0
+ *
+ * 얼굴 이미지를 사전에 미리 준비시키려면 플러그인 관리 창에서 
+ * '얼굴 이미지 미리 불러오기' 매개변수를 알맞게 설정을 하시기 바랍니다.
+ *
+ * 데모 링크 : https://www.dropbox.com/s/v6prurtempabqqv/hud.zip?dl=0
+ * 깃허브 링크 : https://github.com/biud436/MV/blob/master/HUD/RS_HUD_4m.js
+ * 
+ * 데모 게임은 업데이트가 즉각 반영되지 않습니다. (매우 귀찮기 때문에...)
+ *
+ * =============================================================================
+ * 커스텀 위치 설정에 대해
+ * =============================================================================
+ *
+ * 미리 정의된 변수를 사용하여 원하는 좌표에 정확히 위치시킬 수 있습니다.
+ *
+ * 미리 정의된 변수 :
+ *    W   - 'W' 는 '폭' 매개변수 값과 같습니다.
+ *    H   - 'H' 는 '높이' 매개변수 값과 같습니다.
+ *    PD  - 'PD' 는 '경계선 굵기' 매개변수 값과 같습니다.
+ *    BW  - 'BW' 는 게임 캔버스의 폭 값입니다. (화면 가로 크기, B는 Background)
+ *    BH  - 'BH' 는 게임 캔버스의 높이 값입니다. (화면 세로 크기)
+ *
+ * 해상도 설정은 게임마다 다릅니다.
+ * 따라서, 게임에서는 절대 좌표보다는 상대 좌표를 이용하는 경우가 많습니다. 
+ * 미리 정의된 변수를 사용하면 모든 해상도에서 비슷한 위치에 HUD를 놓을 수 있습니다.
+ * 
+ * =============================================================================
+ * 노트 태그 사용법
+ * =============================================================================
+ *
+ * 다음 노트 태그를 맵 속성 창의 메모 란에 설정하면 해당 맵엔 HUD가 생성되지 않습니다.
+ * 
+ *  <DISABLE_HUD>
+ * 
+ * =============================================================================
+ * 스크립트 호출에 대해
+ * =============================================================================
+ *
+ * -----------------------------------------------------------------------------
+ * 투명도 설정을 하는 방법
+ * -----------------------------------------------------------------------------
+ * 투명도는 0에서 255 사이의 숫자 값으로 설정할 수 있습니다. 
+ * PIXI에서는 투명도가 0일 때 스프라이트를 렌더링하지 않습니다.
+ * 
+ *    $gameHud.opacity = 0;
+ * 
+ * 예를 들면 : 투명도를 128로 설정합니다.
+ *    $gameHud.opacity = 128;
+ *
+ * PC 에서는 투명도 자동 제어 이벤트가 매 프레임마다 돌아가고 있습니다.
+ * 
+ * 캐릭터가 HUD 아래에 있거나, 
+ * 마우스가 HUD에 닿았을 때, 
+ * 대화창이 실행될 때 같은 특정 상황을 감지하기 위해서입니다.
+ * 
+ * 이런 상황이 감지되면 투명도를 상황에 맞게 자동으로 조절하게 됩니다.
+ * 하지만 모바일 최적화 버전에는 자동 제어 기능이 제외됩니다 (깃허브에서 찾아보세요)
+ * 
+ * -----------------------------------------------------------------------------
+ * HUD를 감추거나 표시하는 방법
+ * -----------------------------------------------------------------------------
+ * 이 속성 값에 true 또는 false를 넣으면, HUD를 감추거나 표시할 수 있습니다.
+ *
+ *    $gameHud.show = true 또는 false;
+ *
+ * HUD를 감추면 HUD가 화면에 렌더링되지 않습니다.
+ * 
+ * -----------------------------------------------------------------------------
+ * 텍스트 새로 고침 하는 법
+ * -----------------------------------------------------------------------------
+ * 텍스트 스프라이트와 게이지바 스프라이트는 별도의 통지가 있을 때에만 업데이트를 합니다.
+ * 
+ *   $gameTemp.notifyHudTextRefresh();
+ * 
+ * 이 메소드로 업데이트 통지를 보낼 수 있습니다.
+ * 
+ * HUD 시스템에서는 배틀러의 refresh 메서드가 호출될 때 통지를 보내고 있습니다.
+ * 
+ * 이건 CPU를 조금 더 적게 쓰기 위한 조치입니다.
+ *
+ * -----------------------------------------------------------------------------
+ * HUD를 없애고 다시 생성하는 방법
+ * -----------------------------------------------------------------------------
+ * 모든 HUD를 없애고 다시 재생성할 수 있는 방법이 있습니다.
+ *
+ *   $gameTemp.notifyHudRefresh();
+ * 
+ * 사용하지 않는 것을 추천하지만, 다시 생성해야 하는 상황이 생길 수도 있으니 남겨둡니다.
+ * 
+ * =============================================================================
+ * 플러그인 명령에 대해
+ * =============================================================================
+ *
+ * RS_HUD Opacity x : 이 명령은 투명도를 조절하는 명령입니다. x는 0에서 255 사이 값입니다.
+ *
+ * RS_HUD Visible true/false : 화면 표시 여부를 설정할 수 있습니다.
+ *    'RS_HUD Visible true' 는 화면에 HUD를 표시합니다.
+ *    'RS_HUD Visible false' 는 화면에서 HUD를 감춥니다.
+ *
+ * RS_HUD import file_name : data 폴더에서 위치 설정 데이터를 가져옵니다(비동기)
+ * RS_HUD export file_name : data 폴더로 위치 설정 데이터를 내보냅니다.
+ *
+ * =============================================================================
+ * 업데이트 로그
+ * =============================================================================
+ * 2015.10.31 (v1.0.0) - 플러그인 배포 시작
+ * 2016.02.24 (v1.0.1) - 플러그인 커맨드를 추가했습니다
+ * 2016.03.04 (v1.0.2) - (RPG Maker MV v1.1.0 패치 시) 게임 배포시, 이 플러그인에 사용된 리소스 파일이 자동으로 포함됩니다
+ * 2016.03.18 (v1.0.3) - Arrangement 매개변수 추가.
+ * 2016.03.26 (v1.0.4) - 특정 상황(멤버 추가, 게임 저장 후 로드할 때, 다른 맵으로 이동할 때)에서 show 변수가 false 로 설정되어있어도 HUD 가 화면에 표시되는 현상이 수정되었습니다.
+ * 2016.05.05 (v1.0.5) - 텍스트가 변경되지 않는 버그 수정
+ * 2016.05.17 (V1.0.6) - 코드 정리
+ * 2016.05.21 (v1.0.7) - 전투 화면에서만 HUD를 표시하는 기능이 추가 되었습니다 (애드온 추가 필요)
+ * 2016.05.21 (v1.0.8) - 투명도 값이 저장되지 않는 버그가 수정되었습니다.
+ * 2016.06.30 (v1.0.9) - 세 자릿수 마다 쉼표를 찍을 수 있는 플러그인 매개변수를 추가했습니다. 
+ * 2016.07.30 (v1.1.0) - 플러그인 매개변수를 통해 HUD의 폰트, 텍스트의 색상, 크기 등을 바꿀 수 있습니다.
+ * 2016.09.05 (v1.1.1) - 이제 이미지 파일의 이름을 변경할 수 있으며, 사용하지 않는 파일 제외 옵션도 선택할 수 있습니다.
+ * 2016.09.13 (v1.1.2) - 누적된 수치로 나오는 경험치 게이지바를 수정했습니다.
+ * 2016.09.26 (v1.1.3) :
+ * - 이름을 표시할 수 있는 기능을 추가했습니다.
+ * - HUD에 대한 각 UI의 상대 좌표 수정이 가능합니다.
+ * - HUD가 표시되는 위치를 사용자가 마음대로 수정할 수 있습니다. (Custom HUD Anchor 기능)
+ * - 체력과 마력이 일정 비율 이하 또는 이상이라면 게이지 바가 반짝이게 되는 UI 피드백 효과를 추가했습니다.
+ * - 파티원이 죽었을 때 해당 파티원의 HUD가 반투명 처리 됩니다.
+ * - 플레이어가 HUD에 가려지지 않게 근처에 있으면 반투명 처리 됩니다. 반투명 상태일 때 마우스 포인트가 근처에 있거나 플레이어가 근처에 없다면 투명도가 다시 원래대로 돌아올 수 있습니다.
+ * - (Battle HUD Addon) HUD가 표시되는 위치를 수정할 수 있습니다. (이 위치는 일반 필드와는 별도이며 절대 좌표라서 화면 해상도에 상대적이지 않습니다)
+ * - (Battle HUD Addon) 애니메이션 이징 수식 적용으로 인해 선택된 상태를 나타내는 색상 톤 적용 이펙트가 더 자연스러워졌습니다.
+ * 2016.09.27 (v1.1.4) :
+ * - 배경이 설정되지 않은 맵에서 전투 시작 시, 전투 배경 화면에 HUD가 그려져 있는 문제를 수정했습니다.
+ * - 매개변수 설정 파일을 데이터 폴더로 내보내거나 가져올 수 있습니다.
+ * 2016.10.08 (v1.1.5) :
+ * - 전투에서 발생하는 여러가지 버그를 수정했습니다.
+ * 2016.10.11 (v1.1.6) :
+ *  - 파티원을 파티에서 제거할 때 생기는 오류를 수정했습니다.
+ *  - 플러그인 커맨드 또는 전역 변수를 통해 HUD의 투명도가 변경되지 않는 버그를 수정하였습니다.
+ * 2016.10.14 (v1.1.7) - 특정 파티원을 추가할 때 생기는 정의되지 않은 비트맵 오류를 수정했습니다.
+ * 2016.11.16 (v1.1.8) - Fixed a bug with the Battle Background.
+ * 2016.12.19 (v1.1.8b) - Fixed a bug that is not set up the coordinates of the face image.
+ * 2016.12.22 (v1.1.9) :
+ * - Now this plugin does not provide the functionality to automatically adjust transparency and tone changes due to poor performance in canvas mode of mobile device.
+ * - The text elements perform an update through the event handler.
+ * - Fixed an issue that plugins did not work due to image position data parsing errors in crosswalk.
+ * - Fixed an issue that can not be saved due to this update.
+ * 2017.01.06 (v1.2.0) :
+ * - Fixed to redraw the Hud when using the $gameParty.swapOrder method.
+ * - Fixed the hud to process the refresh when the event lisnter listens a refresh request.
+ *   $gameHud.refresh() -> $gameTemp.notifyHudRefresh();
+ * 2017.01.25 (v1.2.1) - Fixed a bug that causes the null when 'battle only' parameter is true.
+ * 2017.01.26 (v1.2.2) :
+ * - Fixed a bug that is not working to preload
+ * - Added a new parameter that could increase the number of the HUD.
+ * - Added parameters for user custom HUD position.
+ * - Fixed an issue that is not working in battle test mode
+ * 2017.03.06 (v1.2.3) :
+ * - Added many descriptions for plugin parameters and help section.
+ * - Altered the hud to be updated all parameters once when initializing.
+ * 2017.04.13 (v1.2.4) - Fixed the issue that the parameters update function is
+ * properly not working in case of you're not using the battle addon, in a
+ * community version.
+ * 2017.06.08 (v1.2.5) - Fixed the issue that is not displaying specific image in RMMV 1.5
+ * 2017.09.17 (v1.2.6) - Fixed the bug that cause the error when restarting the game.
+ * 2017.10.26 (v1.2.7) - This plugin has applied with the new plugin manager features in the plugin parameters.
+ * 2017.10.27 (v1.2.7b) - Fixed the issue that has the endless loading when using the custom font.
+ * 2018.03.15 (v1.2.7c) - Removed some event listeners.
+ * 2018.05.09 (v1.2.8) - Supported a face image that is made using SumRndmDde's CharacterCreatorEX plugin.
+ * 2018.05.09 (v1.2.8b) - Fixed an issue that is not showing the image after it has been added.
+ */
 var Imported = Imported || {};
-Imported.RS_HUD_4m = '1.2.7';
+Imported.RS_HUD_4m = '1.2.8';
 
 var $gameHud = null;
 var RS = RS || {};
@@ -1481,12 +2129,21 @@ RS.HUD.param = RS.HUD.param || {};
 
   HUD.prototype.createHud = function() {
     this._hud = new Sprite(RS.HUD.loadPicture(RS.HUD.param.imgEmptyHUD));
+    this._hud.z = 0;
     this.addChild(this._hud);
   };
 
   HUD.prototype.createFace = function() {
     var player = this.getPlayer();
-    this._faceBitmap = RS.HUD.loadFace(player.faceName());
+    if(Imported["SumRndmDde Character Creator EX"]) {
+      if(player.hasSetImage()) {
+        this._faceBitmap = player.getCreatorBitmapFace();
+      } else {
+        this._faceBitmap = RS.HUD.loadFace(player.faceName());
+      }
+    } else {
+      this._faceBitmap = RS.HUD.loadFace(player.faceName());
+    }
     this._maskBitmap = RS.HUD.loadPicture(RS.HUD.param.imgMasking);
     this._maskBitmap.addLoadListener(function() {
         this._faceBitmap.addLoadListener(this.circleClippingMask.bind(this, player.faceIndex()));
@@ -1515,19 +2172,31 @@ RS.HUD.param = RS.HUD.param || {};
 
   };
 
-  HUD.prototype.createHp = function() {
+  HUD.prototype.addImage = function (sprite, cb, dirty) {
+    if(sprite.bitmap.width <= 0) {
+      return setTimeout(function () {
+        cb(true);
+      }, 0);
+    }
+    this.addChild(sprite);
+    if(dirty) this.setPosition();
+  };
+
+  HUD.prototype.createHp = function(dirty) {
+    var self = this;
     this._hp = new Sprite(RS.HUD.loadPicture(RS.HUD.param.imgHP));
-    this.addChild(this._hp);
+    this.addImage(this._hp, this.createHp.bind(this), dirty);
   };
 
-  HUD.prototype.createMp = function() {
+  HUD.prototype.createMp = function(dirty) {
+    var self = this;
     this._mp = new Sprite(RS.HUD.loadPicture(RS.HUD.param.imgMP));
-    this.addChild(this._mp);
+    this.addImage(this._mp, this.createMp.bind(this), dirty);
   };
 
-  HUD.prototype.createExp = function() {
+  HUD.prototype.createExp = function(dirty) {
     this._exp = new Sprite(RS.HUD.loadPicture(RS.HUD.param.imgEXP));
-    this.addChild(this._exp);
+    this.addImage(this._exp, this.createExp.bind(this), dirty);
   };
 
   HUD.prototype.getTextParams = function(src) {
@@ -1557,15 +2226,16 @@ RS.HUD.param = RS.HUD.param || {};
 
   HUD.prototype.setPosition = function() {
     var param = RS.HUD.param;
-    if(this._face) this.setCoord(this._face, param.ptFace);
-    this.setCoord(this._hp, param.ptHP);
-    this.setCoord(this._mp, param.ptMP);
-    this.setCoord(this._exp, param.ptEXP);
-    this.setCoord(this._hpText, param.ptHPText);
-    this.setCoord(this._mpText, param.ptMPText);
-    this.setCoord(this._levelText, param.ptLevelText);
-    this.setCoord(this._expText, param.ptEXPText);
-    this.setCoord(this._nameText, param.ptNameText);
+    if(this._face) this.setCoord(this._face, param.ptFace, 1);
+    this.setCoord(this._hp, param.ptHP, 2);
+    this.setCoord(this._mp, param.ptMP, 3);
+    this.setCoord(this._exp, param.ptEXP, 4);
+    this.setCoord(this._hpText, param.ptHPText, 5);
+    this.setCoord(this._mpText, param.ptMPText, 6);
+    this.setCoord(this._levelText, param.ptLevelText, 7);
+    this.setCoord(this._expText, param.ptEXPText, 8);
+    this.setCoord(this._nameText, param.ptNameText, 9);
+    this.children.sort(Tilemap.prototype._compareChildOrder.bind(this));
   };
 
   HUD.prototype.addText = function(strFunc, params) {
@@ -1680,10 +2350,11 @@ RS.HUD.param = RS.HUD.param || {};
     return value;
   };
 
-  HUD.prototype.setCoord = function(s,obj) {
+  HUD.prototype.setCoord = function(s,obj, z) {
     var oy = (s._callbackFunction instanceof Function) ? (s.bitmap.height / 2) : 0;
     s.x = this._hud.x + obj.x;
     s.y = this._hud.y + obj.y - oy;
+    s.z = z;
     s.visible = obj.visible;
   };
 

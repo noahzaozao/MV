@@ -1,6 +1,6 @@
 /*:
  * RS_HUD_OptimizedMobile.js
- * @plugindesc (v1.0.0) This plugin draws the HUD, which displays the hp and mp and exp and level of each party members.
+ * @plugindesc (v1.0.1) This plugin draws the HUD, which displays the hp and mp and exp and level of each party members.
  *
  * @author biud436
  *
@@ -485,10 +485,11 @@
  * Change Log
  * =============================================================================
  * 2018.03.16 (v1.0.0) - First Release (forked in RS_HUD_4m)
+ * 2018.05.09 (v1.0.1) - Supported a face image that is made using SumRndmDde's CharacterCreatorEX plugin.
  */
 
 var Imported = Imported || {};
-Imported.RS_HUD_OptimizedMobile = '1.0.0';
+Imported.RS_HUD_OptimizedMobile = '1.0.1';
 
 var $gameHud = null;
 var RS = RS || {};
@@ -1106,7 +1107,15 @@ RS.HUD.param = RS.HUD.param || {};
 
   HUD.prototype.createFace = function() {
     var player = this.getPlayer();
-    this._faceBitmap = RS.HUD.loadFace(player.faceName());
+    if(Imported["SumRndmDde Character Creator EX"]) {
+      if(player.hasSetImage()) {
+        this._faceBitmap = player.getCreatorBitmapFace();
+      } else {
+        this._faceBitmap = RS.HUD.loadFace(player.faceName());
+      }
+    } else {
+      this._faceBitmap = RS.HUD.loadFace(player.faceName());
+    }
     this._maskBitmap = RS.HUD.loadPicture(RS.HUD.param.imgMasking);
     this._maskBitmap.addLoadListener(function() {
         this._faceBitmap.addLoadListener(this.circleClippingMask.bind(this, player.faceIndex()));

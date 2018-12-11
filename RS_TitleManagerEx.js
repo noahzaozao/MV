@@ -165,7 +165,7 @@ Imported.RS_TitleManagerEx = true;
  * @type text
  * @default Specific Command
  *
- * @param Show Specific Sommand
+ * @param Show Specific Command
  * @text 추가 버튼 표시 여부
  * @parent Additional Command
  * @desc 에필로그 이후 특전 맵으로 들어갈 수 있는 버튼이 표시되어야 하는 지 여부
@@ -215,10 +215,14 @@ Imported.RS_TitleManagerEx = true;
  * =============================================================================
  * 변경 기록
  * =============================================================================
+ * 2015.12.21 (v1.0.0) - First Release.
  * 2015.12.22 (v1.0.2) - Fixed a bug about the web local storage.
  * 2016.03.07 (v1.0.3) - Fixed a bug that causes a serious problem when the parameters were set to English.
  * 2017.06.09 (v1.0.4) - Fixed the parameter not to remove the resource when deploying the game.
  * 2017.07.23 (v1.0.5) - Fixed the incorrect description
+ * 2018.08.28 (v1.0.6) - Fixed the incorrect plugin parameter's name.
+ * 2018.12.01 (v1.0.7) :
+ * - BGM이 재생되지 않았던 문제를 수정했습니다.
  */
 /*:
  * @plugindesc This plugin allows player to change resources of the title scene after the user has been ended a certain epilogue.
@@ -370,7 +374,7 @@ Imported.RS_TitleManagerEx = true;
  * @type text
  * @default Specific Command
  *
- * @param Show Specific Sommand
+ * @param Show Specific Command
  * @text Show
  * @parent Additional Command
  * @desc Decide whether the command window is visible.
@@ -417,10 +421,14 @@ Imported.RS_TitleManagerEx = true;
  * =============================================================================
  * Change Log
  * =============================================================================
+ * 2015.12.21 (v1.0.0) - First Release.
  * 2015.12.22 (v1.0.2) - Fixed a bug about the web local storage.
  * 2016.03.07 (v1.0.3) - Fixed a bug that causes a serious problem when the parameters were set to English.
  * 2017.06.09 (v1.0.4) - Fixed the parameter not to remove the resource when deploying the game.
  * 2017.07.23 (v1.0.5) - Fixed the incorrect description
+ * 2018.08.28 (v1.0.6) - Fixed the inccorect plugin parameter's name.
+ * 2018.12.01 (v1.0.7) :
+ * - Fixed the issue that couldn't playback the BGM.
  */
 
 var RS = RS || {};
@@ -692,6 +700,7 @@ RS.TitleManagerEx = RS.TitleManagerEx || {};
       var data = AudioManager.makeEmptyAudioObject();
       data.name = RS.TitleManagerEx.Header.exportBackground()[2];
       data.volume = 90;
+      data.pitch = 100;
       AudioManager.playBgm(data);
     } else {
       AudioManager.playBgm($dataSystem.titleBgm);

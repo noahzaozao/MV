@@ -11,6 +11,9 @@
  * @desc Please enter the currently version.
  * @default 0.1.1
  *
+ * @help
+ * 2016.01.04 (v1.0.0) - First Release.
+ * 2018.12.01 (v1.0.1) - Fixed the bug that is not loaded files in RPG Maker MV v1.6.1 or more.
  */
  /*:ko
   * RS_ResourceUpdate.js
@@ -25,6 +28,9 @@
   * @desc 현재 버전을 입력하세요.
   * @default 0.1.1
   *
+  * @help
+  * 2016.01.04 (v1.0.0) - First Release.
+  * 2018.12.01 (v1.0.1) - Fixed the bug that is not loaded files in RPG Maker MV v1.6.1 or more.
   */
 var Imported = Imported || {};
 Imported.RS_ResourceUpdate = true;
@@ -58,12 +64,14 @@ RS.Net = RS.Net || {};
     if(!Utils.isMobileDevice()) {
 
       this._folder = (function() {
-          var path = window.location.pathname.replace(/(\/www|)\/[^\/]*$/, '');
-          if (path.match(/^\/([A-Z]\:)/)) {
-              path = path.slice(1);
-          }
-          return decodeURIComponent(path);
+
+        var path = require('path');
+        var targetPath = path.join(process.mainModule.filename, "..");
+
+        return decodeURIComponent(targetPath);
+
       })();
+
       this.initDBVersion();
       this.initList();
     }

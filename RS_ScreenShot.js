@@ -1,6 +1,6 @@
 /*:
  * RS_ScreenShot.js
- * @plugindesc This plugin creates the screenshot file in ScreenShots folder when you press on the specific key.
+ * @plugindesc <RS_ScreenShot>
  *
  * @author biud436
  * @date 2015.12.22
@@ -27,6 +27,16 @@
  * @dir audio/se/
  * @type file
  *
+ * @param file format
+ * @text File Format
+ * @type select
+ * @desc Select desired file format in the game screenshot.
+ * @default png
+ * @option png
+ * @value png
+ * @option jpeg
+ * @value jpeg
+ *
  * @reference http://stackoverflow.com/questions/32613060/how-to-take-screenshot-with-node-webkit
  *
  * @help
@@ -45,10 +55,11 @@
  * 2018.02.27 (v1.0.5) :
  * - Fixed the getPath function issue in RMMV 1.6.0.
  * - Changed the source code for RMMV 1.6.0.
+ * 2018.04.25 (v1.0.6) - Added a feature that allows you to select the file format in the screenshot.
  */
 /*:ko
 * RS_ScreenShot.js
-* @plugindesc 이 플러그인은 스크린샷 파일을 만듭니다.
+* @plugindesc <RS_ScreenShot>
 *
 * @author biud436
 * @date 2015.12.22
@@ -75,6 +86,16 @@
 * @dir audio/se/
 * @type file
 *
+* @param file format
+* @text 파일 형식
+* @type select
+* @desc 원하는 스크린샷 파일 형식을 지정하세요.
+* @default png
+* @option png
+* @value png
+* @option jpeg
+* @value jpeg
+*
 * @reference http://stackoverflow.com/questions/32613060/how-to-take-screenshot-with-node-webkit
 *
 * @help
@@ -93,6 +114,7 @@
 * 2018.02.27 (v1.0.5) :
 * - Fixed the getPath function issue in RMMV 1.6.0.
 * - Changed the source code for RMMV 1.6.0.
+* 2018.04.25 (v1.0.6) - Added a feature that allows you to select the file format in the screenshot.
 */
 
 var Imported = Imported || {};
@@ -103,11 +125,17 @@ RS.ScreenShot = RS.ScreenShot || {};
 
 (function($) {
 
-  var parameters = PluginManager.parameters('RS_ScreenShot');
+  var parameters = $plugins.filter(function(i) {
+    return i.description.contains("<RS_ScreenShot>");
+  });
+
+  parameters = (parameters.length > 0) && parameters[0].parameters;
+
   $.KEY = Number(parameters['key'] || 118 );
   $.isPreviewWindow = Boolean(parameters['Screenshot Preview Window'] === 'true');
   $.isPlaySe = Boolean(parameters['Play Se'] === 'true');
   $.seName = parameters['Se Name'] || 'Save';
+  $.fileFormat = parameters["file format"] || "png";
 
   $.localFilePath = function (fileName) {
     if(!Utils.isNwjs()) return '';
@@ -167,7 +195,7 @@ RS.ScreenShot = RS.ScreenShot || {};
         '  </style>',
         '  <title>ScreenShots Preview</title>',
         '  </head>',
-        '<div class="preview">%1.png</div>'.format(fileName),
+        '<div class="preview">%1.%2</div>'.format(fileName, $.fileFormat),
         '<body>',
         '<img src=\'%1\'>'.format(canvas),
         '</body>',
@@ -193,12 +221,7 @@ RS.ScreenShot = RS.ScreenShot || {};
       return;
     }
 
-    var gui;
-    if(Utils.RPGMAKER_VERSION >= "1.6.0") {
-      gui = nw;
-    } else {
-      gui = require('nw.gui');
-    }
+    var gui = require('nw.gui');
     var win = gui.Window.get();
     var fs = require('fs');
     var filePath;
@@ -208,7 +231,7 @@ RS.ScreenShot = RS.ScreenShot || {};
         fs.mkdirSync(this.getPath());
       }
       var fileName = new Date().toJSON().replace(/[.:]+/g, "-");
-      filePath = this.getPath() + '%1.png'.format(fileName);
+      filePath = this.getPath() + '%1.%2'.format(fileName, $.fileFormat);
       fs.writeFile(filePath, buffer, function (err) {
         if (err) throw err;
         if($.isPlaySe) {
@@ -217,7 +240,7 @@ RS.ScreenShot = RS.ScreenShot || {};
         if($.isPreviewWindow) $.previewScreenShot(fileName);
       });
 
-    }.bind(this), { format : 'png', datatype : 'buffer'} );
+    }.bind(this), { format : $.fileFormat, datatype : 'buffer'} );
 
   };
 

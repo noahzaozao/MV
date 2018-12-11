@@ -11,7 +11,7 @@ If you have feedback to send me, please write your feedback at the following sit
 - [Issues](https://github.com/biud436/MV/issues)
 
 ### Credit and Thanks ###
-Biud436
+Biud436 (Not Required)
 
 ### Terms of Use ###
 Free for commercial and non-commercial use.
